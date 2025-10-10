@@ -1,0 +1,16 @@
+# MCP + runtime
+fastmcp==0.3.1
+pydantic==2.9.2
+loguru==0.7.2
+
+# AWS SDK
+boto3==1.35.50
+botocore==1.35.50
+
+# NLP (lightweight distil model; can disable via ENABLE_ML env var)
+transformers==4.44.2
+torch==2.4.1
+regex==2024.11.6
+
+# Utilities
+python-dotenv==1.0.1

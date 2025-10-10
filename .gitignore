@@ -1,0 +1,103 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+dist/
+downloads/
+.eggs/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.pytest_cache/
+nosetests.xml
+coverage.xml
+
+# Virtual environments
+env/
+venv/
+.venv/
+.venv*/
+.venv-mcp-phase2.5/
+ENV/
+env.bak/
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
+
+# Jupyter
+.ipynb_checkpoints
+
+# mypy
+.mypy_cache/
+
+# Pyre
+.pyre/
+
+# profiler
+.prof
+
+# Sphinx
+docs/_build/
+
+# local env files
+.env
+.env.*
+.envrc
+
+# logs
+logs/
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# cache directories
+.cache/
+
+# Hugging Face / model caches (if used locally)
+transformers_cache/
+hf_cache/
+
+# Ignore local AWS credentials if accidentally placed in repo (AWS creds normally live in user home)
+.aws/
+
+# Build artifacts from setuptools, pip, etc.
+*.egg
+*.egg-info/
+.eggs/
+
+# coverage & reports
+coverage/
+htmlcov/
+
+# Temporary files
+*.tmp
+*.swp
+
+# Optional: ignore local editor swap files
+*~
+*.sublime-workspace
+*.sublime-project
