@@ -1,0 +1,36 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: MCP AWS CLI Generator (Phase 3) - SAM template skeleton
+
+Resources:
+  MCPProcessorFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: mcp-aws-cli-generator
+      Handler: lambda_function.handler
+      Runtime: python3.11
+      MemorySize: 1024
+      Timeout: 30
+      Environment:
+        Variables:
+          DEFAULT_REGION: us-west-1
+      Policies:
+        - AWSLambdaBasicExecutionRole
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /generate
+            Method: post
+
+  TelemetryTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: mcp-telemetry
+      AttributeDefinitions:
+        - AttributeName: tenantId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: tenantId
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST

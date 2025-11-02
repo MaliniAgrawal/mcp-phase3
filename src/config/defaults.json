@@ -1,4 +1,5 @@
 {
   "default_region": "us-west-1",
-  "ml_confidence_threshold": 0.7
+  "ml_confidence_threshold": 0.7,
+  "telemetry": {"enabled": true, "log_path": "telemetry/telemetry.log"}
 }

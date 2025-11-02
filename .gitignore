@@ -38,6 +38,7 @@ venv/
 .venv-mcp-phase2.5/
 ENV/
 env.bak/
+venv-phase3/
 
 # PyCharm
 .idea/
@@ -68,6 +69,8 @@ docs/_build/
 # logs
 logs/
 *.log
+telemetry/
+/telemetry/telemetry.log
 
 # OS generated files
 .DS_Store

@@ -1,18 +1,14 @@
-# src/core/aws_validator.py
+# src/core/validator.py
 import boto3
 import botocore
 from loguru import logger
-from config.settings import DEFAULT_REGION
+from src.config.settings import DEFAULT_REGION
 
 def _session_client(service: str, region: str):
-    session = boto3.Session()
-    return session.client(service, region_name=region)
+    sess = boto3.Session()
+    return sess.client(service, region_name=region)
 
 def validate_command_safe(intent: str, entities: dict) -> dict:
-    """
-    Return structured validation info:
-    { status: 'valid'|'invalid'|'unknown'|'error'|'unsupported', reason: str, detail: {...} }
-    """
     region = entities.get("region") or DEFAULT_REGION
     result = {"intent": intent, "region": region, "status": "unknown", "reason": None, "detail": {}}
 
@@ -23,27 +19,35 @@ def validate_command_safe(intent: str, entities: dict) -> dict:
             if not bucket:
                 result.update(status="unknown", reason="No bucket name provided.")
                 return result
-            # head_bucket is faster & indicates existence; many accounts cannot head global buckets but it's safe
             try:
                 s3.head_bucket(Bucket=bucket)
                 result.update(status="invalid", reason=f"Bucket '{bucket}' already exists.")
             except botocore.exceptions.ClientError as e:
-                code = int(getattr(e.response.get("Error", {}), "Code", 0) or 0)
-                # If 404-like, bucket doesn't exist (available)
-                # Different errors map differently; simplest approach: treat 404/NotFound as available
-                # For many permissions, head_bucket returns 403; that often means exists but not accessible.
-                err_code = e.response.get("Error", {}).get("Code", "")
-                if err_code in ("404", "NoSuchBucket", "NotFound"):
+                err = e.response.get("Error", {}).get("Code", "")
+                if err in ("404", "NoSuchBucket", "NotFound"):
                     result.update(status="valid", reason="Bucket name available.")
                 else:
-                    # 403 or other -> probably exists or access denied -> treat as invalid with detail
-                    result.update(status="invalid", reason=f"Bucket may exist or access denied: {err_code}")
+                    result.update(status="invalid", reason=f"{err}")
             return result
 
         if intent == "list_s3_buckets":
             s3 = _session_client("s3", region)
             buckets = [b["Name"] for b in s3.list_buckets().get("Buckets", [])]
             result.update(status="valid", reason="Listed buckets", detail={"buckets": buckets})
+            return result
+
+        if intent in ("describe_ec2_instances", "list_ec2_instances"):
+            ec2 = _session_client("ec2", region)
+            reservations = ec2.describe_instances().get("Reservations", [])
+            instances = []
+            for r in reservations:
+                for inst in r.get("Instances", []):
+                    instances.append({
+                        "InstanceId": inst.get("InstanceId"),
+                        "State": inst.get("State", {}).get("Name"),
+                        "Tags": inst.get("Tags", [])
+                    })
+            result.update(status="valid", reason="Listed instances", detail={"instances": instances})
             return result
 
         if intent in ("create_dynamodb_table", "list_dynamodb_tables"):
@@ -135,14 +139,14 @@ def validate_command_safe(intent: str, entities: dict) -> dict:
                 else:
                     result.update(status="error", reason=str(e))
             return result
-
-        result.update(status="unsupported", reason="Validation not implemented for this intent.")
+        # ... (as in phase-2.5 validator)
+        result.update(status="unsupported", reason="Validation not implemented for this intent")
         return result
 
     except botocore.exceptions.NoCredentialsError:
         result.update(status="unknown", reason="AWS credentials not configured.")
         return result
     except Exception as e:
-        logger.exception("Validation error")
+        logger.exception("Validation error: %s", e)
         result.update(status="error", reason=str(e))
         return result
