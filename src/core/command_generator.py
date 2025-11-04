@@ -1,5 +1,7 @@
 # src/core/command_generator.py
-from src.config.settings import DEFAULT_REGION
+# Use package-root imports (when `src` is on PYTHONPATH) — avoid importing `src.` prefix which breaks
+# when running files under `src/` directly.
+from config.settings import DEFAULT_REGION
 from loguru import logger
 
 def list_supported_services():

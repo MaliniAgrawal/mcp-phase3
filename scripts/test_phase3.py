@@ -22,7 +22,12 @@ from loguru import logger
 # ──────────────────────────────────────────────
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "src"
-sys.path.append(str(SRC))
+# Prefer inserting at the front so local `src` takes precedence
+if SRC.exists():
+    sys.path.insert(0, str(SRC.resolve()))
+else:
+    # Fallback: append so script still works if layout is different
+    sys.path.append(str(SRC))
 
 # Import core modules from src
 from core.command_generator import generate_command

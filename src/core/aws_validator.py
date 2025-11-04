@@ -2,7 +2,8 @@
 import boto3
 import botocore
 from loguru import logger
-from src.config.settings import DEFAULT_REGION
+# Use root-level package import when `src` is on PYTHONPATH
+from config.settings import DEFAULT_REGION
 
 def _session_client(service: str, region: str):
     sess = boto3.Session()
