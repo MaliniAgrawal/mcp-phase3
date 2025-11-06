@@ -36,6 +36,33 @@ def validate_command_safe(intent: str, entities: dict) -> dict:
             buckets = [b["Name"] for b in s3.list_buckets().get("Buckets", [])]
             result.update(status="valid", reason="Listed buckets", detail={"buckets": buckets})
             return result
+            
+        if intent == "invoke_lambda":
+            lambda_client = _session_client("lambda", region)
+            function_name = entities.get("function_name")
+            if not function_name:
+                result.update(status="invalid", reason="No function name provided")
+                return result
+            try:
+                lambda_client.get_function(FunctionName=function_name)
+                result.update(status="valid", reason=f"Function '{function_name}' exists")
+            except botocore.exceptions.ClientError as e:
+                result.update(status="invalid", reason=f"Function '{function_name}' not found")
+            return result
+            
+        if intent == "create_iam_user":
+            iam = _session_client("iam", region)
+            username = entities.get("user_name")
+            if not username:
+                result.update(status="invalid", reason="No username provided")
+                return result
+            try:
+                iam.get_user(UserName=username)
+                result.update(status="invalid", reason=f"User '{username}' already exists")
+            except botocore.exceptions.ClientError as e:
+                if e.response["Error"]["Code"] == "NoSuchEntity":
+                    result.update(status="valid", reason=f"Username '{username}' is available")
+            return result
 
         if intent in ("describe_ec2_instances", "list_ec2_instances"):
             ec2 = _session_client("ec2", region)

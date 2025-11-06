@@ -32,7 +32,7 @@ async def generate_aws_cli(query: str):
     from core.nlp_utils import parse_nlp
     from core.command_generator import generate_command
     # parse_nlp is a synchronous helper that returns (intent, entities)
-    intent, entities = parse_nlp(query)
+    intent, entities = await asyncio.to_thread(parse_nlp, query)
 
     # generate_command is synchronous and returns (command, explanation)
     command, explanation = generate_command(intent, entities)

@@ -3,21 +3,37 @@
 # when running files under `src/` directly.
 from config.settings import DEFAULT_REGION
 from loguru import logger
+from core.aws_parsers.s3_parser import parse_s3_intent
+from core.aws_parsers.ec2_parser import parse_ec2_intent
+from core.aws_parsers.lambda_parser import parse_lambda_intent
+from core.aws_parsers.dynamodb_parser import parse_dynamodb_intent
+from core.aws_parsers.iam_parser import parse_iam_intent
 
 def list_supported_services():
     return ["s3", "ec2", "dynamodb", "iam", "lambda", "sns", "sqs", "cloudwatch", "ecs", "glue"]
 
 def generate_command(intent: str, entities: dict):
-    region = entities.get("region") or DEFAULT_REGION
+    """Generate AWS CLI commands based on intent and entities.
+    
+    Args:
+        intent: The classified intent string
+        entities: Dict of extracted entities
+        
+    Returns:
+        tuple: (command_str, description_str)
+    """
+    if "s3" in intent:
+        return parse_s3_intent(intent, entities), f"S3 operation: {intent}"
+    if "ec2" in intent:
+        return parse_ec2_intent(intent, entities), f"EC2 operation: {intent}"
+    if "lambda" in intent:
+        return parse_lambda_intent(intent, entities), f"Lambda operation: {intent}"
+    if "dynamodb" in intent:
+        return parse_dynamodb_intent(intent, entities), f"DynamoDB operation: {intent}"
+    if "iam" in intent:
+        return parse_iam_intent(intent, entities), f"IAM operation: {intent}"
 
-    # S3
-    if intent == "create_s3_bucket":
-        bucket = entities.get("bucket") or "my-bucket"
-        cmd = f"aws s3 mb s3://{bucket} --region {region}"
-        return cmd, f"Creates an S3 bucket named '{bucket}' in {region}."
-
-    if intent == "list_s3_buckets":
-        return "aws s3 ls", "Lists S3 buckets in your account."
+    return "echo 'Unknown service intent'", "Service not supported or intent unclear"
 
     # DynamoDB
     if intent == "create_dynamodb_table":
