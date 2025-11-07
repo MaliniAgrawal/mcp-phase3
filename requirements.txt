@@ -1,25 +1,25 @@
 # MCP + runtime
-fastmcp==0.3.1
-pydantic==2.9.2
-loguru==0.7.2
+fastmcp==0.2.0
+pydantic==2.12.4
+loguru==0.7.3
 
 # AWS SDK
-boto3==1.35.50
-botocore==1.35.50
+boto3==1.40.60
+botocore==1.40.60
 
 # HTTP Adapter
-fastapi==0.115.2
-uvicorn==0.32.0
+fastapi==0.48.0
+uvicorn==0.38.0
 
 # NLP (local + optional vector/RAG)
-transformers==4.44.2
-torch==2.4.1
-regex==2024.11.6
+transformers==4.57.1
+torch==2.9.0+cpu
+regex==2025.11.3
 faiss-cpu==1.7.4  # optional; only required for RAG
 
 # Anthropic Haiku fallback
 anthropic==1.1.4
 
 # Utilities
-python-dotenv==1.0.1
+python-dotenv==1.2.1
 python-json-logger==2.0.4  # optional if you want built-in JSON formatting elsewhere
